@@ -1,0 +1,15 @@
+vin/gnd - to power
+5v/gnd - to rail
+A4 - SDA on Display
+A5 - SLC on Display
+D3 - Button 1
+D4 - Button 2
+D5 - Buzzer
+D6 - LED 1
+D7 - LED 2
+D8 - LED 3
+D9 - LED 4
+D10 - LED 5
+D11 - LED 6
+D12 - LED 7
+D13 - Servo Signal
