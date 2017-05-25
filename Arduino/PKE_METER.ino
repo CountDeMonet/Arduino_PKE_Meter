@@ -21,7 +21,13 @@ const int BUZZER = 5;
 const int BUTTON1 = 3;
 const int BUTTON2 = 4;
 
-void setup() {
+// know thy button state
+bool medium_state = false;
+bool high_state = false;
+bool button1_down = false;
+bool button2_down = false;
+
+void setup() {  
   pinMode(LED1, OUTPUT);
   pinMode(LED2, OUTPUT);
   pinMode(LED3, OUTPUT);
@@ -38,7 +44,7 @@ void setup() {
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.display();
-  delay(1000);
+  delay(500);
 
   // Clear the buffer.
   display.clearDisplay();
@@ -47,19 +53,53 @@ void setup() {
   SERVO1.write(90);
 }
 
+// current display val
+int currentVal = 0;
 void loop() {
-  int convertedVal = 0;
-  if (digitalRead(BUTTON1) == false) { 
-     convertedVal = 40;  
-  }else if(digitalRead(BUTTON2) == false) { 
-    convertedVal = 90; 
+  int button1 = digitalRead(BUTTON1);
+  int button2 = digitalRead(BUTTON2);
+  
+  if( button1 == LOW && button1_down == false ){
+		  button1_down = true;
+      
+      if ( medium_state == true) { 
+        medium_state = false;
+        high_state = false;
+        currentVal = 0;  
+      }else { 
+  			medium_state = true;
+  			high_state = false;
+  			currentVal = 40;  
+		  } 
+  } else {
+	  if (button1 == HIGH && button1_down == true ){
+		  button1_down = false;
+	  }
   }
   
+  if( button2 == LOW && button2_down == false ){
+    button2_down = true;
+    
+    if(high_state == true) { 
+      medium_state = false;
+      high_state = false;
+      currentVal = 0; 
+    }else { 
+      medium_state = false;
+      high_state = true;
+      currentVal = 90; 
+    } 
+  }else{
+    if (button2 == HIGH && button2_down == true ){
+      button2_down = false;
+    }
+  }
+ .z  
   // do the led stuff
-  LEDLoop(convertedVal);
+  LEDLoop(currentVal);
 
   // do the servo stuff
-  ServoLoop(convertedVal);
+  ServoLoop(currentVal);
 
   // delay in between reads for stability
   delay(1);
