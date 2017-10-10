@@ -27,7 +27,7 @@ bool high_state = false;
 bool button1_down = false;
 bool button2_down = false;
 
-void setup() {  
+void setup() {
   pinMode(LED1, OUTPUT);
   pinMode(LED2, OUTPUT);
   pinMode(LED3, OUTPUT);
@@ -58,43 +58,43 @@ int currentVal = 0;
 void loop() {
   int button1 = digitalRead(BUTTON1);
   int button2 = digitalRead(BUTTON2);
-  
-  if( button1 == LOW && button1_down == false ){
-		  button1_down = true;
-      
-      if ( medium_state == true) { 
-        medium_state = false;
-        high_state = false;
-        currentVal = 0;  
-      }else { 
-  			medium_state = true;
-  			high_state = false;
-  			currentVal = 40;  
-		  } 
-  } else {
-	  if (button1 == HIGH && button1_down == true ){
-		  button1_down = false;
-	  }
-  }
-  
-  if( button2 == LOW && button2_down == false ){
-    button2_down = true;
-    
-    if(high_state == true) { 
+
+  if ( button1 == LOW && button1_down == false ) {
+    button1_down = true;
+
+    if ( medium_state == true) {
       medium_state = false;
       high_state = false;
-      currentVal = 0; 
-    }else { 
+      currentVal = 0;
+    } else {
+      medium_state = true;
+      high_state = false;
+      currentVal = 40;
+    }
+  } else {
+    if (button1 == HIGH && button1_down == true ) {
+      button1_down = false;
+    }
+  }
+
+  if ( button2 == LOW && button2_down == false ) {
+    button2_down = true;
+
+    if (high_state == true) {
+      medium_state = false;
+      high_state = false;
+      currentVal = 0;
+    } else {
       medium_state = false;
       high_state = true;
-      currentVal = 90; 
-    } 
-  }else{
-    if (button2 == HIGH && button2_down == true ){
+      currentVal = 90;
+    }
+  } else {
+    if (button2 == HIGH && button2_down == true ) {
       button2_down = false;
     }
   }
- .z  
+
   // do the led stuff
   LEDLoop(currentVal);
 
@@ -116,8 +116,8 @@ void drawDisplay(int level, int bar) {
   int b2 = random(prevB, bar);
   int b3 = random(prevB, bar);
   int b4 = random(prevB, bar);
-  int b5 = random(prevB/2, bar/2);
-  int b6 = random(prevB/2, bar/2);
+  int b5 = random(prevB / 2, bar / 2);
+  int b6 = random(prevB / 2, bar / 2);
   prevB = bar;
 
   display.fillRect(2, display.height() - (5 + b1), 5, b1, WHITE);
@@ -126,9 +126,9 @@ void drawDisplay(int level, int bar) {
   display.fillRect(display.width() - 23, display.height() - (5 + b6), 5, b6, WHITE);
   display.fillRect(display.width() - 15, display.height() - (5 + b4), 5, b4, WHITE);
   display.fillRect(display.width() - 7, display.height() - (5 + b3), 5, b3, WHITE);
-  
+
   display.drawCircle(display.width() / 2, display.height() / 2 + 7, level, WHITE);
-  
+
   display.display();
 }
 
@@ -189,7 +189,7 @@ void LEDLoop(int convertedVal) {
       digitalWrite(LED2, true);
       LEDNum = 7;
       drawDisplay(3, 65);
-    }else if ( LEDNum == 7 ) {
+    } else if ( LEDNum == 7 ) {
       TriggerBuzzer();
       clearLoop();
       digitalWrite(LED2, false);
