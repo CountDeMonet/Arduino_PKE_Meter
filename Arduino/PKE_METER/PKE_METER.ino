@@ -56,10 +56,15 @@ void setup() {
   pinMode(BUZZER, OUTPUT);
   pinMode(BUTTON1, INPUT);
   pinMode(BUTTON2, INPUT);
-  pinMode(2, OUTPUT);
 
   digitalWrite(BUTTON1, HIGH);
   digitalWrite(BUTTON2, HIGH);
+
+  // The following lines are because my PKE setup
+  // is currently running without the buck converter.
+  // Pin D2 acts as VCC for the OLED screen
+  // PN June 12, 2018d
+  pinMode(2, OUTPUT);
   digitalWrite(2, HIGH);
 
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
