@@ -17,6 +17,24 @@ const int LED4 = 9;
 const int LED5 = 8;
 const int LED6 = 7;
 const int LED7 = 6;
+int FILM;
+bool SOUND;
+const int GB2_PATTERN[7] = {
+  LED3, LED1, LED6, LED4, LED7, LED5, LED2
+};
+const int GB1_PATTERN[7] = {
+  LED3, LED5, LED7, LED4, LED1, LED6, LED2
+};
+const int DISPLAY_PATTERN[][2] = {
+  {21, 5},
+  {18, 20},
+  {15, 30},
+  {12, 45},
+  {9, 50},
+  {6, 55},
+  {3, 65}
+};
+
 const int BUZZER = 5;
 const int BUTTON1 = 3;
 const int BUTTON2 = 4;
@@ -42,12 +60,19 @@ void setup() {
   digitalWrite(BUTTON1, HIGH);
   digitalWrite(BUTTON2, HIGH);
 
+  // The following lines are because my PKE setup
+  // is currently running without the buck converter.
+  // Pin D2 acts as VCC for the OLED screen
+  // PN June 12, 2018d
+  pinMode(2, OUTPUT);
+  digitalWrite(2, HIGH);
+
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.display();
-  delay(500);
 
   // Clear the buffer.
   display.clearDisplay();
+  initialSetup();
 
   SERVO1.attach(13);
   SERVO1.write(90);
@@ -105,12 +130,51 @@ void loop() {
   delay(1);
 }
 
+void initialSetup(){
+  String headings[] = {"WHICH PATTERN?", "SOUNDS?"};
+  String labels[][2] = {
+    {"GB1", "GB2"},
+    {"YES", "NO"}
+  };
+  for (int i = 0; i < 2; i++){
+    int button1 = digitalRead(BUTTON2);
+    int button2 = digitalRead(BUTTON1);
+    while (button1 == HIGH && button2 == HIGH){
+      display.setTextSize(1);
+      display.setTextColor(WHITE);
+      display.setCursor(22, 5);
+      display.print(headings[i]);
+      display.setCursor(10, 30);
+      display.print(labels[i][0]);
+      display.setCursor(100, 30);
+      display.print(labels[i][1]);
+      display.display();
+      button1 = digitalRead(BUTTON2);
+      button2 = digitalRead(BUTTON1);
+    }
+    if (button1 == LOW && i == 0){
+      FILM = 1;
+    } else if (button2 == LOW && i == 0){
+      FILM = 2;
+    } else if (button1 == LOW && i == 1) {
+      SOUND = true;
+    } else if (button2 == LOW && i == 1) {
+      SOUND = false;
+    }
+    digitalWrite(BUTTON1, HIGH);
+    digitalWrite(BUTTON2, HIGH);
+    delay(500);
+    display.clearDisplay();
+  }
+}
+
 int prevB = 0;
 void drawDisplay(int level, int bar) {
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(29, 5);
-  display.print("GHOSTBUSTERS");
+  String display_str = String("GHOSTBUSTERS");
+  display.print(display_str);
 
   int b1 = random(prevB, bar);
   int b2 = random(prevB, bar);
@@ -146,57 +210,28 @@ void LEDLoop(int convertedVal) {
   if ((unsigned long)(currentMillis - previousMillis) >= ledSpeed)
   {
     previousMillis = millis();
-
-    if ( LEDNum == 0 ) {
+    if (SOUND) {
       TriggerBuzzer();
-      clearLoop();
-      digitalWrite(LED3, true);
-      LEDNum = 1;
-      drawDisplay(21, 5);
-    } else if ( LEDNum == 1 ) {
-      TriggerBuzzer();
-      digitalWrite(LED3, false);
-      digitalWrite(LED1, true);
-      LEDNum = 2;
-      drawDisplay(18, 20);
-    } else if ( LEDNum == 2 ) {
-      TriggerBuzzer();
-      digitalWrite(LED1, false);
-      digitalWrite(LED6, true);
-      LEDNum = 3;
-      drawDisplay(15, 30);
-    } else if ( LEDNum == 3 ) {
-      TriggerBuzzer();
-      digitalWrite(LED6, false);
-      digitalWrite(LED4, true);
-      LEDNum = 4;
-      drawDisplay(12, 45);
-    } else if ( LEDNum == 4 ) {
-      TriggerBuzzer();
-      digitalWrite(LED4, false);
-      digitalWrite(LED7, true);
-      LEDNum = 5;
-      drawDisplay(9, 50);
-    } else if ( LEDNum == 5 ) {
-      TriggerBuzzer();
-      digitalWrite(LED7, false);
-      digitalWrite(LED5, true);
-      LEDNum = 6;
-      drawDisplay(6, 55);
-    } else if ( LEDNum == 6 ) {
-      TriggerBuzzer();
-      digitalWrite(LED5, false);
-      digitalWrite(LED2, true);
-      LEDNum = 7;
-      drawDisplay(3, 65);
-    } else if ( LEDNum == 7 ) {
-      TriggerBuzzer();
-      clearLoop();
-      digitalWrite(LED2, false);
-      digitalWrite(LED3, true);
-      LEDNum = 1;
-      drawDisplay(21, 5);
     }
+    if (FILM == 1){
+      if (LEDNum == 0){
+        clearLoop();
+        digitalWrite(GB1_PATTERN[6], LOW);
+      } else {
+        digitalWrite(GB1_PATTERN[LEDNum - 1], LOW);
+      }
+      digitalWrite(GB1_PATTERN[LEDNum], HIGH);
+    } else {
+      if (LEDNum == 0){
+        clearLoop();
+        digitalWrite(GB2_PATTERN[6], LOW);
+      } else {
+        digitalWrite(GB2_PATTERN[LEDNum - 1], LOW);
+      }
+      digitalWrite(GB2_PATTERN[LEDNum], HIGH);      
+    }
+    drawDisplay(DISPLAY_PATTERN[LEDNum][0], DISPLAY_PATTERN[LEDNum][1]);
+    LEDNum = (LEDNum + 1) % 7;
   }
 }
 
