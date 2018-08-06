@@ -138,12 +138,12 @@ void clearLoop() {
 }
 
 void LEDLoop(int convertedVal) {
-  int ledSpeed = map(convertedVal, 0, 100, 500, 20);
+  unsigned long ledSpeed = map(convertedVal, 0, 100, 500, 20);
 
   // check to see if it's time to change the state of the LED
   unsigned long currentMillis = millis();
 
-  if ((currentMillis - previousMillis >= ledSpeed))
+  if ((unsigned long)(currentMillis - previousMillis) >= ledSpeed)
   {
     previousMillis = millis();
 
