@@ -17,14 +17,17 @@ const int LED4 = 9;
 const int LED5 = 8;
 const int LED6 = 7;
 const int LED7 = 6;
+
 int FILM;
 bool SOUND;
-const int GB2_PATTERN[7] = {
-  LED3, LED1, LED6, LED4, LED7, LED5, LED2
-};
+
 const int GB1_PATTERN[7] = {
   LED3, LED5, LED7, LED4, LED1, LED6, LED2
 };
+const int GB2_PATTERN[7] = {
+  LED3, LED1, LED6, LED4, LED7, LED5, LED2
+};
+
 const int DISPLAY_PATTERN[][2] = {
   {21, 5},
   {18, 20},
@@ -134,11 +137,11 @@ void initialSetup(){
   String headings[] = {"WHICH PATTERN?", "SOUNDS?"};
   String labels[][2] = {
     {"GB1", "GB2"},
-    {"YES", "NO"}
+    {"NO", "YES"}
   };
   for (int i = 0; i < 2; i++){
-    int button1 = digitalRead(BUTTON2);
-    int button2 = digitalRead(BUTTON1);
+    int button1 = digitalRead(BUTTON1);
+    int button2 = digitalRead(BUTTON2);
     while (button1 == HIGH && button2 == HIGH){
       display.setTextSize(1);
       display.setTextColor(WHITE);
@@ -149,17 +152,17 @@ void initialSetup(){
       display.setCursor(100, 30);
       display.print(labels[i][1]);
       display.display();
-      button1 = digitalRead(BUTTON2);
-      button2 = digitalRead(BUTTON1);
+      button1 = digitalRead(BUTTON1);
+      button2 = digitalRead(BUTTON2);
     }
     if (button1 == LOW && i == 0){
       FILM = 1;
     } else if (button2 == LOW && i == 0){
       FILM = 2;
     } else if (button1 == LOW && i == 1) {
-      SOUND = true;
-    } else if (button2 == LOW && i == 1) {
       SOUND = false;
+    } else if (button2 == LOW && i == 1) {
+      SOUND = true;
     }
     digitalWrite(BUTTON1, HIGH);
     digitalWrite(BUTTON2, HIGH);
@@ -245,4 +248,3 @@ void ServoLoop(int convertedVal) {
   int servoVal = map(convertedVal, 0, 100, 110, 40);
   SERVO1.write(servoVal);
 }
-
